@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Stock Price Prediction</h2>
+        <label for="days">Enter number of days to predict:</label>
+        <input type="number" id="days" min="1" max="30" required>
+        <button onclick="getPrediction()">Predict</button>
+
+        <div id="results">
+            <h3>Predicted Prices:</h3>
+            <ul id="prediction-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        function getPrediction() {
+            let days = document.getElementById("days").value;
+            fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'days=' + days
+            })
+            .then(response => response.json())
+            .then(data => {
+                let list = document.getElementById("prediction-list");
+                list.innerHTML = "";
+                data.forEach(entry => {
+                    let listItem = document.createElement("li");
+                    listItem.textContent = `${entry.Date}: $${entry["Predicted Price"].toFixed(2)}`;
+                    list.appendChild(listItem);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
